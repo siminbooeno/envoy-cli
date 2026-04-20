@@ -43,6 +43,12 @@ class LintResult:
         return f"{errors} error(s), {warnings} warning(s)"
 
 
+def _is_valid_key(key: str) -> bool:
+    """Return True if the key contains only valid characters (alphanumeric + underscore)
+    and does not start with a digit."""
+    return bool(key) and not key[0].isdigit() and key.replace("_", "").isalnum()
+
+
 def lint_env_file(path: str) -> LintResult:
     """Run all lint checks on a .env file and return a LintResult."""
     result = LintResult()
@@ -66,7 +72,7 @@ def lint_env_file(path: str) -> LintResult:
         key, _, value = line.partition("=")
         key = key.strip()
 
-        if not key.replace("_", "").isalnum() or key[0].isdigit():
+        if not _is_valid_key(key):
             result.issues.append(LintIssue(
                 line=lineno, key=key,
                 message="Key contains invalid characters or starts with a digit",
