@@ -32,11 +32,16 @@ def _strip_quotes(value: str) -> str:
     return value
 
 
+def _needs_quoting(value: str) -> bool:
+    """Return True if a value should be quoted when serializing."""
+    return not value or ' ' in value or '#' in value or '\n' in value
+
+
 def serialize_env(data: Dict[str, str]) -> str:
     """Serialize a key-value dictionary back to .env file format."""
     lines = []
     for key, value in sorted(data.items()):
-        if ' ' in value or '#' in value or not value:
+        if _needs_quoting(value):
             value = f'"{value}"'
         lines.append(f'{key}={value}')
     return '\n'.join(lines) + '\n'
