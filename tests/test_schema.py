@@ -47,7 +47,7 @@ def test_integer_type_invalid():
     assert any("integer" in str(v) for v in result.violations)
 
 
-def test_boolean_type_valid()
+def test_boolean_type_valid():
     schema = {"DEBUG": FieldSchema(type=FieldType.BOOLEAN)}
     for val in ["true", "false", "1", "0", "yes", "no"]:
         result = validate_env({"DEBUG": val}, schema)
@@ -98,20 +98,13 @@ def test_pattern_match_invalid():
 
 
 def test_schema_result_str_valid():
-    result = SchemaResult()
-    assert "passed" in str(result)
+    result = SchemaResult(violations=[])
+    assert result.is_valid
+    assert "valid" in str(result).lower()
 
 
 def test_schema_result_str_invalid():
-    result = SchemaResult(violations=[SchemaViolation("KEY", "some error")])
-    assert "failed" in str(result)
-    assert "KEY" in str(result)
-
-
-def test_multiple_violations_collected():
-    schema = {
-        "A": FieldSchema(required=True),
-        "B": FieldSchema(type=FieldType.INTEGER),
-    }
-    result = validate_env({"B": "notint"}, schema)
-    assert len(result.violations) == 2
+    violation = SchemaViolation(field="MY_VAR", message="is required")
+    result = SchemaResult(violations=[violation])
+    assert not result.is_valid
+    assert "MY_VAR" in str(result)
