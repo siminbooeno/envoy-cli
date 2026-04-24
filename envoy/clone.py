@@ -24,6 +24,12 @@ class CloneResult:
     def total_skipped(self) -> int:
         return len(self.keys_skipped)
 
+    def __repr__(self) -> str:
+        return (
+            f"CloneResult(source={self.source!r}, destination={self.destination!r}, "
+            f"total_copied={self.total_copied}, total_skipped={self.total_skipped})"
+        )
+
 
 def clone_env(
     source: str,
@@ -33,7 +39,23 @@ def clone_env(
     masked: bool = False,
     overwrite: bool = False,
 ) -> CloneResult:
-    """Clone a .env file to a destination path with optional filtering."""
+    """Clone a .env file to a destination path with optional filtering.
+
+    Args:
+        source: Path to the source .env file.
+        destination: Path where the cloned file will be written.
+        include_keys: If provided, only these keys will be copied.
+        exclude_keys: If provided, these keys will be omitted from the clone.
+        masked: If True, mask the values of copied keys before writing.
+        overwrite: If True, overwrite the destination file if it already exists.
+
+    Returns:
+        A CloneResult describing what was copied and what was skipped.
+
+    Raises:
+        FileNotFoundError: If the source file does not exist.
+        FileExistsError: If the destination exists and overwrite is False.
+    """
     src_path = Path(source)
     dst_path = Path(destination)
 
