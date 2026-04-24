@@ -103,3 +103,14 @@ def validate_env(
             )
 
     return result
+
+
+def find_unknown_keys(
+    env: Dict[str, str],
+    schema: Dict[str, FieldSchema],
+) -> List[str]:
+    """Return a list of keys present in env that are not defined in the schema.
+
+    Useful for detecting undocumented or unexpected environment variables.
+    """
+    return [key for key in env if key not in schema]
