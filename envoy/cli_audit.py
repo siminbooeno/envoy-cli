@@ -4,6 +4,15 @@ import argparse
 from envoy.audit import read_log, clear_log
 
 
+def _format_entry(entry: dict) -> str:
+    """Format a single audit log entry as a human-readable string."""
+    details_str = ""
+    if entry.get("details"):
+        parts = [f"{k}={v}" for k, v in entry["details"].items()]
+        details_str = "  " + ", ".join(parts)
+    return f"[{entry['timestamp']}] {entry['action']:12s}  {entry['target']}{details_str}"
+
+
 def cmd_audit_log(args: argparse.Namespace) -> None:
     """Display audit log entries, optionally filtered by action."""
     entries = read_log(directory=args.dir)
@@ -23,11 +32,7 @@ def cmd_audit_log(args: argparse.Namespace) -> None:
     shown = filtered[-limit:]
 
     for entry in shown:
-        details_str = ""
-        if entry.get("details"):
-            parts = [f"{k}={v}" for k, v in entry["details"].items()]
-            details_str = "  " + ", ".join(parts)
-        print(f"[{entry['timestamp']}] {entry['action']:12s}  {entry['target']}{details_str}")
+        print(_format_entry(entry))
 
 
 def cmd_audit_clear(args: argparse.Namespace) -> None:
