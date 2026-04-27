@@ -68,3 +68,19 @@ def get_group_keys(env_file: Path, group: str) -> Optional[List[str]]:
 def list_groups(env_file: Path) -> List[str]:
     """Return all group names for a given env file."""
     return list(load_groups(env_file).keys())
+
+
+def rename_group(env_file: Path, old_name: str, new_name: str) -> bool:
+    """Rename a group from old_name to new_name.
+
+    Returns True if the rename succeeded, False if old_name does not exist.
+    Raises ValueError if new_name already exists.
+    """
+    groups = load_groups(env_file)
+    if old_name not in groups:
+        return False
+    if new_name in groups:
+        raise ValueError(f"Group '{new_name}' already exists.")
+    groups[new_name] = groups.pop(old_name)
+    save_groups(env_file, groups)
+    return True
